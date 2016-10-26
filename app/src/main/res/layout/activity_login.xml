@@ -67,20 +67,37 @@
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:selectAllOnFocus="false" />
+                    android:selectAllOnFocus="false"
+                    android:textColor="@android:color/black" />
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:textColor="@color/colorTextLight" />
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:text="@string/login_check_box_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/keepLogin"
+                    android:textSize="12sp"
+                    android:textAlignment="textStart"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/email_sign_in_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_sign_in"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextLight"
+                    android:layout_weight="1"
+                    android:elevation="0dp" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
