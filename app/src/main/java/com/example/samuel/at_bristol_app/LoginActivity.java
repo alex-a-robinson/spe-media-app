@@ -209,7 +209,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new UserLoginTask(username, password);
             mAuthTask.execute((Void) null);
             Intent intent = new Intent(this,MainActivity.class);
-            intent.putExtra("username",username);
+            Integer userID = 123; //TODO: fetch the actual user id from database
+            intent.putExtra("userID",userID);
             startActivity(intent);
         }
     }

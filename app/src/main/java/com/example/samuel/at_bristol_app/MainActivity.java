@@ -1,23 +1,37 @@
 package com.example.samuel.at_bristol_app;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.samuel.at_bristol_app.models.MediaGroupModel;
+import com.example.samuel.at_bristol_app.models.MediaModel;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,12 +43,16 @@ public class MainActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    SectionsPagerAdapter mSectionsPagerAdapter;
+
+    Integer userID;
+    Fragment fragments[] = new Fragment[4];
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        Intent intent = getIntent();
+        userID = intent.getIntExtra("userID",-1);
+
+        fragments[0] = MediaFragment.newInstance();
+        fragments[1] = MediaFragment.newInstance();
+        fragments[2] = MediaFragment.newInstance();
+        fragments[3] = MediaFragment.newInstance();
     }
 
 
@@ -78,38 +104,61 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    // a media fragment containing a listView that will be populated with the groups of media
+    public static class MediaFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
+        ListView mediaGroupList;
+        List<MediaModel> listMedia1;
+        List<MediaModel> listMedia2;
+        MediaGroupModel mgm1;
+        MediaGroupModel mgm2;
+        List<MediaGroupModel> mgms;
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        //Returns a new instance of this fragment
+        public static MediaFragment newInstance(/*List<MediaGroupModel> mediaGroupList*/) {
+            MediaFragment mediaFragment = new MediaFragment();
+
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
+            //TODO: populate list of media groups using userID and a database check
+            //args.putString("mediaGroupList");
+            mediaFragment.setArguments(args);
+            return mediaFragment;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            View view = inflater.inflate(R.layout.fragment_media, container, false);
+
+            //fake media list
+            //TODO: implement fetching the real list of media
+            listMedia1 = Arrays.asList(
+                    new MediaModel(new Date(200),"foo",null),
+                    new MediaModel(new Date(35),"bar",null),
+                    new MediaModel(new Date(1234),"FB",null));
+            mgm1 = new MediaGroupModel("Group 1",listMedia1);
+
+            listMedia2 = Arrays.asList(
+                    new MediaModel(new Date(46),"barfoo",null),
+                    new MediaModel(new Date(23),"foobar",null));
+
+            mgm2 = new MediaGroupModel("Group 2",listMedia2);
+            mgms = Arrays.asList(mgm1,mgm2);
+
+            mediaGroupList = (ListView) view.findViewById(R.id.lvMediaGroups);
+            MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group, mgms);
+            mediaGroupList.setAdapter(adapter);
+            mediaGroupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    MediaGroupModel mediaGroupModel = mgms.get(position); // get model of tapped group
+                    //TODO: move to next activity
+                }
+            });
+
+
+            return view;
+
         }
     }
 
@@ -119,36 +168,90 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return fragments[position];
         }
 
         @Override
         public int getCount() {
-            // Show 4 total pages.
-            return 4;
+            return fragments.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "HOME";
                 case 1:
-                    return "SECTION 2";
+                    return "MEDIA";
                 case 2:
-                    return "SECTION 3";
+                    return "MY ACCOUNT";
                 case 3:
-                    return "SECTION 4";
+                    return "SETTINGS";
             }
             return null;
         }
+    }
+}
+
+class MediaGroupAdapter extends ArrayAdapter<MediaGroupModel>{
+
+    private List<MediaGroupModel> mediaGroupModels;
+    private int resource;
+    private LayoutInflater inflater;
+
+    MediaGroupAdapter(Context context, int resource, List<MediaGroupModel> mediaGroupModels) {
+        super(context,resource,mediaGroupModels);
+        this.mediaGroupModels = mediaGroupModels;
+        this.resource = resource;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+
+        ViewHolder holder;
+
+        if(convertView == null){
+            holder = new ViewHolder();
+            convertView = inflater.inflate(resource, null);
+            holder.ivThumbnail = (ImageView) convertView.findViewById(R.id.ivThumbnail);
+            holder.tvThumbNum = (TextView) convertView.findViewById(R.id.tvThumbNum);
+            holder.tvGroupName = (TextView) convertView.findViewById(R.id.tvGroupName);
+            holder.tvNumItems = (TextView) convertView.findViewById(R.id.tvNumItems);
+            holder.tvDate = (TextView) convertView.findViewById(R.id.tvDate);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        //TODO: Handle Thumbnails
+
+        holder.tvGroupName.setText(mediaGroupModels.get(position).getGroupName());
+
+        DateFormat df = new SimpleDateFormat("dd-MM-yy", Locale.UK);
+        holder.tvDate.setText(df.format(mediaGroupModels.get(position).getDate()));
+
+        String numItemsText = "Items: " + mediaGroupModels.get(position).getGroupSize().toString();
+        holder.tvNumItems.setText(numItemsText);
+        String thumbNumItemsText = mediaGroupModels.get(position).getGroupSize().toString();
+        holder.tvThumbNum.setText(thumbNumItemsText);
+
+        return convertView;
+    }
+
+    private class ViewHolder{
+        private ImageView ivThumbnail;
+        private TextView tvThumbNum;
+        private TextView tvGroupName;
+        private TextView tvNumItems;
+        private TextView tvDate;
+
     }
 }
