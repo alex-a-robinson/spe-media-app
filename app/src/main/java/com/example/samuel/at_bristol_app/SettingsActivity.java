@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,10 +88,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     };
 
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
+    // Helper method to determine if the device has an extra-large screen.
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
@@ -170,8 +168,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+                || NotificationPreferenceFragment.class.getName().equals(fragmentName)
+                || PrivacyPreferenceFragment.class.getName().equals(fragmentName)
+                || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -186,12 +185,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            bindPreferenceSummaryToValue(findPreference("switch_mobile_data"));
         }
 
         @Override
@@ -203,6 +197,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+
     }
 
     /**
@@ -216,12 +211,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
@@ -235,23 +224,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
+    public static class PrivacyPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
+            addPreferencesFromResource(R.xml.pref_privacy);
             setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            Preference prefPrivacyPolicy = findPreference("setting_privacy_policy");
+            prefPrivacyPolicy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String url = getResources().getString(R.string.web_privacy);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -264,4 +254,76 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class AboutPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_about);
+            setHasOptionsMenu(true);
+
+            Preference prefPrivacyPolicy = findPreference("setting_privacy_policy");
+            prefPrivacyPolicy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String url = getResources().getString(R.string.web_privacy);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+            Preference prefTerms = findPreference("setting_terms");
+            prefTerms.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String url = getResources().getString(R.string.web_terms);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+            Preference prefContact = findPreference("setting_contact");
+            prefContact.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String url = getResources().getString(R.string.web_contact);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+            Preference prefAccessibility = findPreference("setting_accessibility");
+            prefAccessibility.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    String url = getResources().getString(R.string.web_accessibility);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 }

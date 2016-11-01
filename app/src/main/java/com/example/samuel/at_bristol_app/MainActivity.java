@@ -3,6 +3,7 @@ package com.example.samuel.at_bristol_app;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -13,11 +14,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -50,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
     static Integer userID;
     Fragment fragments[] = new Fragment[3];
-
+    TabLayout tabLayout;
     Toolbar toolbar;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    CustomViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +75,12 @@ public class MainActivity extends AppCompatActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (CustomViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         final String titles[] = {"Home","Media","My Account"};
 
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         //tab icon stuff
         //sets the tab icons and handles coloring them
@@ -95,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccentGrey);
                     tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                     toolbar.setTitle(titles[tab.getPosition()]);
+                    mViewPager.setPagingEnabled(!(tab.getPosition()==0));
                 }
 
                 @Override
@@ -119,9 +125,18 @@ public class MainActivity extends AppCompatActivity {
         userID = intent.getIntExtra("userID",-1);
 
         //declaring each tab's content fragment
-        fragments = new Fragment[]{MediaFragment.newInstance(),
+        fragments = new Fragment[]{HomeFragment.newInstance(),
                 MediaFragment.newInstance(),
                 MediaFragment.newInstance()};
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (tabLayout.getSelectedTabPosition()==0){
+            WebView wvHome = ((HomeFragment) fragments[0]).getWebView();
+            if (wvHome.canGoBack())
+                wvHome.goBack();
+        }
     }
 
     @Override
@@ -142,6 +157,11 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this,SettingsActivity.class);
             intent.putExtra("userID",userID);
+            startActivity(intent);
+        } else if (id == R.id.action_tickets) {
+            String url = getResources().getString(R.string.web_tickets);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
             startActivity(intent);
         }
 
@@ -202,6 +222,36 @@ public class MainActivity extends AppCompatActivity {
             MediaGroupModel mgm2 = new MediaGroupModel("Group 2",listMedia2);
             return Arrays.asList(mgm1,mgm2);
         }
+    }
+
+    public static class HomeFragment extends Fragment {
+
+        private WebView wvHome;
+
+        //Returns a new instance of this fragment
+        public static HomeFragment newInstance() {
+            HomeFragment homeFragment = new HomeFragment();
+            Bundle args = new Bundle();
+            homeFragment.setArguments(args);
+            return homeFragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            View view = inflater.inflate(R.layout.fragment_home, container, false);
+            wvHome = (WebView) view.findViewById(R.id.wvHome);
+            wvHome.loadUrl(getString(R.string.web_home));
+            wvHome.setWebViewClient(new WebViewClient());
+            wvHome.getSettings().setJavaScriptEnabled(true);
+            return view;
+        }
+
+        WebView getWebView(){
+            return wvHome;
+        }
+
     }
 
     /**
@@ -284,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
 }
 
 

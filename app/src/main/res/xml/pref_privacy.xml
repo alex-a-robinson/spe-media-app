@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:title="@string/setting_media_history"
+        android:key="switch_media_history" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:title="@string/setting_search_history"
+        android:key="switch_search_history" />
+    <Preference
+        android:title="@string/setting_privacy_policy"
+        android:key="setting_privacy_policy" />
+</PreferenceScreen>

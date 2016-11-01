@@ -13,11 +13,11 @@
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$PrivacyPreferenceFragment"
         android:icon="@drawable/ic_security_black_24dp"
         android:title="@string/prefs_header_privacy" />
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$AboutPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/prefs_header_about" />
 

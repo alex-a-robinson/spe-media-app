@@ -161,12 +161,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (mAuthTask != null) {
             return;
         }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
-
 
         boolean cancel = false;
         View focusView = null;
@@ -209,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new UserLoginTask(username, password);
             mAuthTask.execute((Void) null);
             Intent intent = new Intent(this,MainActivity.class);
-            Integer userID = 123; //TODO: fetch the actual user id from database and proabably some auth token
+            Integer userID = 123; //TODO: fetch the actual user id from database and probably some auth token
             intent.putExtra("userID",userID);
             startActivity(intent);
         }
@@ -222,7 +219,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 5;
+        return password.length() > 4;
     }
 
     /**

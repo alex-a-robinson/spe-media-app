@@ -1,27 +1,40 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="notifications_new_message"
-        android:title="@string/pref_title_new_message_notifications" />
+    <PreferenceCategory
+        android:title="Push Notifications"
+        android:key="setting_group_push_notifications">
 
-    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
-    <RingtonePreference
-        android:defaultValue="content://settings/system/notification_sound"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_ringtone"
-        android:ringtoneType="notification"
-        android:title="@string/pref_title_ringtone" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="New media"
+            android:summary="Get notified when a new piece of media is available"
+            android:key="switch_push_media" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="New exhibits"
+            android:summary="Get notified of brand new exhibits"
+            android:key="switch_push_exhibits" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="Planetarium reminders"
+            android:summary="Get notified when a planetarium show is about to start"
+            android:key="switch_push_planetarium" />
+    </PreferenceCategory>
 
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_vibrate"
-        android:title="@string/pref_title_vibrate" />
+    <PreferenceCategory
+    android:title="E-mail"
+    android:key="setting_group_push_notifications">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="New exhibits"
+            android:summary="Receive e-mails about exciting new exhibits"
+            android:key="switch_email_exhibits" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="Promotions"
+            android:summary="Receive e-mails including special offers"
+            android:key="switch_email_promotions" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

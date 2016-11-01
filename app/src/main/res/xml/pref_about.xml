@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:title="@string/setting_help"
+        android:key="setting_help" />
+    <Preference
+        android:title="@string/setting_terms"
+        android:key="setting_terms" />
+    <Preference
+        android:title="@string/setting_privacy_policy"
+        android:key="setting_privacy_policy" />
+    <Preference
+        android:title="@string/setting_accessibility"
+        android:key="setting_accessibility"/>
+    <Preference
+        android:title="@string/setting_licences"
+        android:key="setting_licences" />
+    <Preference
+        android:title="@string/setting_contact"
+        android:key="setting_contact" />
+    <Preference
+        android:title="@string/setting_feedback"
+        android:key="setting_feedback" />
+    <Preference
+        android:title="@string/setting_info"
+        android:summary="@string/setting_info_summary"
+        android:key="setting_info" />
+    <Preference
+        android:title="@string/setting_version"
+        android:summary="@string/app_version"
+        android:key="setting_version" />
+
+</PreferenceScreen>
