@@ -3,21 +3,21 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.activities.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.activities.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$PrivacyPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.activities.SettingsActivity$PrivacyPreferenceFragment"
         android:icon="@drawable/ic_security_black_24dp"
         android:title="@string/prefs_header_privacy" />
     <header
-        android:fragment="com.example.samuel.at_bristol_app.SettingsActivity$AboutPreferenceFragment"
+        android:fragment="com.example.samuel.at_bristol_app.activities.SettingsActivity$AboutPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/prefs_header_about" />
 

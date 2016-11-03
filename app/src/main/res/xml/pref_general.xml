@@ -4,4 +4,5 @@
         android:defaultValue="false"
         android:title="@string/setting_mobile_data"
         android:key="switch_mobile_data" />
+
 </PreferenceScreen>

@@ -1,4 +1,4 @@
-package com.example.samuel.at_bristol_app;
+package com.example.samuel.at_bristol_app.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,6 +32,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.samuel.at_bristol_app.R;
 
 import java.util.ArrayList;
 import java.util.List;

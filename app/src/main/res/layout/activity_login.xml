@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.samuel.at_bristol_app.LoginActivity">
+    tools:context="com.example.samuel.at_bristol_app.activities.LoginActivity">
 
     <!-- Login progress -->
 
@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/at_bristol_logo"
-        android:id="@+id/imageView3" />
+        android:id="@+id/imageView3"
+        android:contentDescription="@string/at_bristol_logo_description" />
 
     <ProgressBar
         android:id="@+id/login_progress"
@@ -95,8 +96,7 @@
                     android:textStyle="bold"
                     android:textAlignment="center"
                     android:textColor="@color/colorTextLight"
-                    android:layout_weight="1"
-                    android:elevation="0dp" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
         </LinearLayout>

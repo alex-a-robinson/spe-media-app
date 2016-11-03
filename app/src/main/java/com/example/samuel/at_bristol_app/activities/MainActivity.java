@@ -1,7 +1,8 @@
-package com.example.samuel.at_bristol_app;
+package com.example.samuel.at_bristol_app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,21 +15,24 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.samuel.at_bristol_app.CustomViewPager;
+import com.example.samuel.at_bristol_app.R;
 import com.example.samuel.at_bristol_app.models.MediaGroupModel;
 import com.example.samuel.at_bristol_app.models.MediaModel;
 
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccentGrey));
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         //declaring each tab's content fragment
         fragments = new Fragment[]{HomeFragment.newInstance(),
                 MediaFragment.newInstance(),
-                MediaFragment.newInstance()};
+                AccountFragment.newInstance()};
     }
 
     @Override
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("userID",userID);
             startActivity(intent);
         } else if (id == R.id.action_tickets) {
-            String url = getResources().getString(R.string.web_tickets);
+            String url = getString(R.string.web_tickets);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
             startActivity(intent);
@@ -168,7 +173,63 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // a media fragment containing a listView that will be populated with the groups of media
+    public static class HomeFragment extends Fragment {
+
+        private WebView wvHome;
+
+        //Returns a new instance of this fragment
+        public static HomeFragment newInstance() {
+            HomeFragment homeFragment = new HomeFragment();
+            Bundle args = new Bundle();
+            homeFragment.setArguments(args);
+            return homeFragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            View view = inflater.inflate(R.layout.fragment_home, container, false);
+            wvHome = (WebView) view.findViewById(R.id.wvHome);
+            wvHome.loadUrl(getString(R.string.web_home));
+            wvHome.setWebViewClient(new CustomWebViewClient(view));
+            wvHome.getSettings().setJavaScriptEnabled(true);
+
+            return view;
+        }
+
+        WebView getWebView(){
+            return wvHome;
+        }
+    }
+
+    static class CustomWebViewClient extends WebViewClient {
+        private ProgressBar progressBar;
+        CustomWebViewClient(View view){
+            this.progressBar = new ProgressBar(view.getContext());
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            view.evaluateJavascript("document.getElementById('header-wrapper').parentNode.removeChild(document.getElementById('header-wrapper'));" +
+                    "    document.getElementById('content-wrapper').removeAttribute('style');" +
+                    "    document.getElementById('footer').parentNode.removeChild(document.getElementById('footer'));" +
+                    "    document.getElementById('cookie-notification').parentNode.removeChild(document.getElementById('cookie-notification'));", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) { }
+            });
+            progressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
     public static class MediaFragment extends Fragment {
 
         ListView mediaGroupList;
@@ -191,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
             //fetch media
             this.mgms = fetchMediaGroups(userID);
 
-            mediaGroupList = (ListView) view.findViewById(R.id.lvList);
+            mediaGroupList = (ListView) view.findViewById(R.id.lvMediaGroups);
             MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group, mgms);
             mediaGroupList.setAdapter(adapter);
 
@@ -224,40 +285,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class HomeFragment extends Fragment {
+    public static class AccountFragment extends Fragment {
 
-        private WebView wvHome;
+        TextView tvAccountCircle, tvAccountName, tvAccountEmail;
+        View view;
 
         //Returns a new instance of this fragment
-        public static HomeFragment newInstance() {
-            HomeFragment homeFragment = new HomeFragment();
+        public static AccountFragment newInstance() {
+            AccountFragment accountFragment = new AccountFragment();
             Bundle args = new Bundle();
-            homeFragment.setArguments(args);
-            return homeFragment;
+            accountFragment.setArguments(args);
+            return accountFragment;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            if (view == null)
+                view = inflater.inflate(R.layout.fragment_account, container, false);
+            tvAccountCircle = (TextView) view.findViewById(R.id.tvAccountCircle);
+            tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+            tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+            //TODO: update all textViews with relevant info
 
-            View view = inflater.inflate(R.layout.fragment_home, container, false);
-            wvHome = (WebView) view.findViewById(R.id.wvHome);
-            wvHome.loadUrl(getString(R.string.web_home));
-            wvHome.setWebViewClient(new WebViewClient());
-            wvHome.getSettings().setJavaScriptEnabled(true);
+
             return view;
-        }
-
-        WebView getWebView(){
-            return wvHome;
         }
 
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {

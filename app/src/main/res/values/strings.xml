@@ -52,4 +52,10 @@
     <string name="setting_version">App version</string>
     <string name="setting_info_summary">An educational charity</string>
     <string name="menu_tickets">Buy Tickets</string>
+    <string name="background">background</string>
+    <string name="account_circle_default">A</string>
+    <string name="account_name_default">Account Name</string>
+    <string name="account_email_default">Account Email</string>
+    <string name="account_default_password">Default value</string>
+    <string name="at_bristol_logo_description">At-Bristol logo</string>
 </resources>

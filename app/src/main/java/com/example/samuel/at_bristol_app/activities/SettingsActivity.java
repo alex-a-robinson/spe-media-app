@@ -1,4 +1,4 @@
-package com.example.samuel.at_bristol_app;
+package com.example.samuel.at_bristol_app.activities;
 
 
 import android.annotation.TargetApi;
@@ -21,7 +21,9 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
-import java.util.Arrays;
+import com.example.samuel.at_bristol_app.AppCompatPreferenceActivity;
+import com.example.samuel.at_bristol_app.R;
+
 import java.util.List;
 
 /**
@@ -87,6 +89,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
     };
+
 
     // Helper method to determine if the device has an extra-large screen.
     private static boolean isXLargeTablet(Context context) {
@@ -184,8 +187,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
-
-            bindPreferenceSummaryToValue(findPreference("switch_mobile_data"));
         }
 
         @Override
