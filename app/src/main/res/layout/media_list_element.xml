@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <ImageView
+            android:id="@+id/ivThumbnail"
+            android:layout_height="90dp"
+            android:contentDescription="@string/thumbnail"
+            android:src="@drawable/placeholder"
+            android:layout_width="120dp" />
+
+        <RelativeLayout
+            android:id="@+id/relativelayout"
+            android:layout_gravity="bottom|right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/tvThumbType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_margin="4dp"
+                android:gravity="bottom|right"
+                android:text="@string/corner_file_type"
+                android:textColor="@color/colorTextLight"
+                android:background="@drawable/rounded_corner" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="@string/media_title"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvMediaName"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textSize="24sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:text="@string/media_duration_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvDuration"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:text="@string/groupSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvFileSize"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:text="@string/groupDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvDate"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                android:id="@+id/imageButton2"
+                android:scaleY="1.5"
+                android:scaleX="1.5"
+                android:layout_marginRight="8dp"
+                android:padding="8dp"
+                android:contentDescription="@string/options" />
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

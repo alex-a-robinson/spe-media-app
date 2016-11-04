@@ -42,10 +42,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.samuel.at_bristol_app.activities.MainActivity" />
         </activity>
+        <activity android:name=".activities.MediaListActivity"></activity>
     </application>
 
 </manifest>

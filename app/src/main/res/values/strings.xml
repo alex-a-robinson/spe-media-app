@@ -58,4 +58,8 @@
     <string name="account_email_default">Account Email</string>
     <string name="account_default_password">Default value</string>
     <string name="at_bristol_logo_description">At-Bristol logo</string>
+    <string name="corner_file_type">FileType</string>
+    <string name="media_title">Media Title</string>
+    <string name="media_duration_default">Media Duration</string>
+    <string name="options">options</string>
 </resources>

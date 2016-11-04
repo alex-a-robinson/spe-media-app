@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     Toolbar toolbar;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     CustomViewPager mViewPager;
 
     @Override
@@ -90,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
         //tab icon stuff
         //sets the tab icons and handles coloring them
         tabLayout.setupWithViewPager(mViewPager);
-        int icons[] = {R.drawable.ic_home_black_24dp,
-                R.drawable.ic_video_library_black_24dp,
-                R.drawable.ic_account_circle_black_24dp};
+        int icons[] = {R.drawable.sq_placeholder,
+                R.drawable.sq_placeholder,
+                R.drawable.sq_placeholder};
         for (int i = 0; i<tabLayout.getTabCount();i++)
             tabLayout.getTabAt(i).setIcon(icons[i]);
 
@@ -253,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
             this.mgms = fetchMediaGroups(userID);
 
             mediaGroupList = (ListView) view.findViewById(R.id.lvMediaGroups);
-            MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group, mgms);
+            MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group_list_element, mgms);
             mediaGroupList.setAdapter(adapter);
 
             mediaGroupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
