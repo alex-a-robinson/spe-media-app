@@ -13,6 +13,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="resend_email">Resend Verification</string>
     <string name="title_activity_main">Home</string>
     <string name="login_check_box_text">Keep Me Logged In</string>
     <string name="thumbnail">Thumbnail</string>
@@ -64,4 +65,5 @@
     <string name="options">options</string>
     <string name="sign_in_button_text">sign in</string>
     <string name="register_button_text">register</string>
+    <string name="error_user_exists">User already exists</string>
 </resources>

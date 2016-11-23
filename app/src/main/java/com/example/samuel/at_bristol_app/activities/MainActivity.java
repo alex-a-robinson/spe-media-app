@@ -80,17 +80,17 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null) {
                     //store current user
                     user = currentUser;
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d(TAG, "MAIN onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     //go to login screen
-                    Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                    /*Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.remove("username");
                     editor.remove("password");
                     editor.apply();
                     startActivity(intent);
-
+                    */
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
 
