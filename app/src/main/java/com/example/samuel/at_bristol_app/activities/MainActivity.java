@@ -2,19 +2,21 @@ package com.example.samuel.at_bristol_app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +36,8 @@ import com.example.samuel.at_bristol_app.CustomViewPager;
 import com.example.samuel.at_bristol_app.R;
 import com.example.samuel.at_bristol_app.models.MediaGroupModel;
 import com.example.samuel.at_bristol_app.models.MediaModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,10 +65,38 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     Toolbar toolbar;
 
+    private static final String TAG = "MainActivity";
+    FirebaseUser user;
+
     CustomViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    //store current user
+                    user = currentUser;
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    //go to login screen
+                    Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.remove("username");
+                    editor.remove("password");
+                    editor.apply();
+                    startActivity(intent);
+
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -86,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
         //tab icon stuff
         //sets the tab icons and handles coloring them
         tabLayout.setupWithViewPager(mViewPager);
-        int icons[] = {R.drawable.sq_placeholder,
-                R.drawable.sq_placeholder,
-                R.drawable.sq_placeholder};
+        int icons[] = {R.drawable.ic_home_black_24dp,
+                R.drawable.ic_video_library_black_24dp,
+                R.drawable.ic_account_circle_black_24dp};
         for (int i = 0; i<tabLayout.getTabCount();i++)
             tabLayout.getTabAt(i).setIcon(icons[i]);
 

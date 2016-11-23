@@ -62,4 +62,6 @@
     <string name="media_title">Media Title</string>
     <string name="media_duration_default">Media Duration</string>
     <string name="options">options</string>
+    <string name="sign_in_button_text">sign in</string>
+    <string name="register_button_text">register</string>
 </resources>

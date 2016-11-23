@@ -88,11 +88,19 @@
                     android:layout_weight="1" />
 
                 <Button
+                    android:text="@string/sign_in_button_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:id="@+id/email_sign_in_button"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorTextLight" />
+
+                <Button
+                    android:id="@+id/email_register_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_sign_in"
+                    android:text="@string/register_button_text"
                     android:textStyle="bold"
                     android:textAlignment="center"
                     android:textColor="@color/colorTextLight"
