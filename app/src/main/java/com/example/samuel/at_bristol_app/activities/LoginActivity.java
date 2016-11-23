@@ -43,6 +43,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,21 +206,21 @@ void signIn(final String username, final String password) {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     } else {
-                        final AlertDialog dialog = new AlertDialog.Builder(getApplicationContext()).create();
+                        final AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
                         dialog.setTitle("Verify E-mail");
                         dialog.setMessage("please check your e-mails for a verification link");
-                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Resend Verification", new DialogInterface.OnClickListener() {
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Resend Verification", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 mAuth.getCurrentUser().sendEmailVerification();
                                 dialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "Verification E-mail Sent!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialog.dismiss();
                             }
                         });
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Retry", new DialogInterface.OnClickListener() {
@@ -287,22 +288,51 @@ void signIn(final String username, final String password) {
                             Log.e(TAG, e.getMessage());
                         }
                     } else {
-                        mAuth.getCurrentUser().sendEmailVerification();
-                        final AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
-                        dialog.setTitle("Verify E-mail");
-                        dialog.setMessage("please check your e-mails for a verification link");
-                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+
+                        final AlertDialog nameDialog = new AlertDialog.Builder(LoginActivity.this).create();
+                        nameDialog.setTitle("Enter Name");
+                        nameDialog.setMessage("Please enter your name");
+                        final EditText editText = new EditText(LoginActivity.this);
+                        editText.setSingleLine();
+                        nameDialog.setView(editText);
+                        nameDialog.setCancelable(false);
+                        nameDialog.setCanceledOnTouchOutside(false);
+                        nameDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                dialog.dismiss();
+                                if (editText.getText().length()>=6 && isAlpha(String.valueOf(editText.getText()))) {
+                                    mAuth.getCurrentUser().sendEmailVerification();
+                                    UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(String.valueOf(editText.getText()))
+                                            .build();
+                                    mAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
+                                    nameDialog.dismiss();
+
+                                    final AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
+                                    dialog.setTitle("Verify E-mail");
+                                    dialog.setMessage("please check your e-mails for a verification link");
+                                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    dialog.show();
+                                } else {
+                                    editText.setError("name must be at least 6 letters long and contain only a-z");
+                                }
                             }
                         });
-                        dialog.show();
+                        nameDialog.show();
                     }
                 }
             });
 
         }
+    }
+
+    public boolean isAlpha(String name) {
+        return name.matches("[a-z A-Z]+");
     }
 
     private void populateAutoComplete() {

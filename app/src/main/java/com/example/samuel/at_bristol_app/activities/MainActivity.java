@@ -40,6 +40,7 @@ import com.example.samuel.at_bristol_app.models.MediaGroupModel;
 import com.example.samuel.at_bristol_app.models.MediaModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.api.model.StringList;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     protected Fragment fragments[] = new Fragment[3];
     TabLayout tabLayout;
     Toolbar toolbar;
+    static FirebaseUser currentUser;
 
     private static final String TAG = "MainActivity";
     FirebaseUser user;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                currentUser = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     //store current user
                     user = currentUser;
@@ -337,19 +339,18 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(view.getContext(),LoginActivity.class);
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(view.getContext());
                     SharedPreferences.Editor editor = prefs.edit();
-                    editor.remove("username");
-                    editor.remove("password");
-                    editor.apply();
+                    editor.remove("username").remove("password").apply();
                     startActivity(intent);
                     return true;
                 }
             });
             //TODO: update all textViews with relevant info
-
-
+            String name = currentUser.getDisplayName();
+            tvAccountCircle.setText(String.valueOf(Character.toUpperCase(name.charAt(0))));
+            tvAccountEmail.setText(String.valueOf(currentUser.getEmail()));
+            tvAccountName.setText(String.valueOf(name));
             return view;
         }
-
     }
 
     class SectionsPagerAdapter extends FragmentPagerAdapter {
