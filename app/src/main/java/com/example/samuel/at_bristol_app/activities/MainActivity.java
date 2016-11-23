@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     static Integer userID;
-    Fragment fragments[] = new Fragment[3];
+    protected Fragment fragments[] = new Fragment[3];
     TabLayout tabLayout;
     Toolbar toolbar;
 
@@ -82,15 +84,6 @@ public class MainActivity extends AppCompatActivity {
                     user = currentUser;
                     Log.d(TAG, "MAIN onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
-                    //go to login screen
-                    /*Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.remove("username");
-                    editor.remove("password");
-                    editor.apply();
-                    startActivity(intent);
-                    */
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
 
@@ -154,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
 
         //getting userID passed in through intent from loginActivity
+        //TODO: replace this
         Intent intent = getIntent();
         userID = intent.getIntExtra("userID",-1);
 
@@ -219,10 +213,10 @@ public class MainActivity extends AppCompatActivity {
 
             View view = inflater.inflate(R.layout.fragment_home, container, false);
             wvHome = (WebView) view.findViewById(R.id.wvHome);
-            wvHome.loadUrl(getString(R.string.web_home));
+            /*wvHome.loadUrl(getString(R.string.web_home));
             wvHome.setWebViewClient(new CustomWebViewClient(view));
             wvHome.getSettings().setJavaScriptEnabled(true);
-
+            */
             return view;
         }
 
@@ -317,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvAccountCircle, tvAccountName, tvAccountEmail;
         View view;
+        Preference logout;
 
         //Returns a new instance of this fragment
         public static AccountFragment newInstance() {
@@ -334,6 +329,21 @@ public class MainActivity extends AppCompatActivity {
             tvAccountCircle = (TextView) view.findViewById(R.id.tvAccountCircle);
             tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
             tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+            PreferenceFragment preferenceFragment = (PreferenceFragment) getActivity().getFragmentManager().findFragmentById(R.id.accountPrefFrag);
+            logout = preferenceFragment.findPreference("setting_log_out");
+            logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(view.getContext(),LoginActivity.class);
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.remove("username");
+                    editor.remove("password");
+                    editor.apply();
+                    startActivity(intent);
+                    return true;
+                }
+            });
             //TODO: update all textViews with relevant info
 
 

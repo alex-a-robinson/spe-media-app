@@ -39,7 +39,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
@@ -74,6 +73,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
         // Set up the login form.
 
@@ -92,26 +92,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-
-
-                    Log.d(TAG, "LOGIN onAuthStateChanged:signed_in:" + user.getUid());
-                    mAuth.removeAuthStateListener(mAuthListener);
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // ...
-            }
-        };
-        mAuth.addAuthStateListener(mAuthListener);
-
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -128,15 +108,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "LOGIN onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+        mAuth.addAuthStateListener(mAuthListener);
+
         mProgressView = findViewById(R.id.login_progress);
+        mLoginFormView = findViewById(R.id.login_form);
 
         //check for saved username and pass
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("username","");
         String password = prefs.getString("password","");
         if (!username.equalsIgnoreCase("")&&!password.equalsIgnoreCase("")){
-            attemptLogin(username,password);
+            Log.d("-------",username);
+            signIn(username,password);
+            showProgress(true);
         }
     }
 
@@ -145,7 +144,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin(String username, String password) {
+    private void attemptLogin(final String username, final String password) {
 
         // Reset errors.
         mEmailView.setError(null);
@@ -177,10 +176,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // form field with an error.
             focusView.requestFocus();
         } else {
-
             showProgress(true);
-
-
             CheckBox keepLogin = (CheckBox) findViewById(R.id.keepLogin);
             if (keepLogin.isChecked()){ //save login in sharedPreferences if the checkbox is ticked
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -189,36 +185,58 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 editor.putString("password",password);
                 editor.apply();
             }
-
-            // perform the user login attempt.
-            mAuth.signInWithEmailAndPassword(username, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
-                            if (!task.isSuccessful()) {
-                                Log.w(TAG, "signInWithEmail", task.getException());
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            } else {
-                                if (mAuth.getCurrentUser().isEmailVerified()) {
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
-                                } else {
-                                    //TODO: dialog with resend verification
-                                }
-                            }
-                        }
-                    });
+            signIn(username,password);
         }
         showProgress(false);
     }
+void signIn(final String username, final String password) {
+    mAuth.signInWithEmailAndPassword(username, password)
+        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-    private void attemptRegister(String username, String password) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "signInWithEmail", task.getException());
+                    mEmailView.setError(getString(R.string.invalid_login));
+                    mEmailView.requestFocus();
+                } else {
+                    if (mAuth.getCurrentUser().isEmailVerified()) {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    } else {
+                        final AlertDialog dialog = new AlertDialog.Builder(getApplicationContext()).create();
+                        dialog.setTitle("Verify E-mail");
+                        dialog.setMessage("please check your e-mails for a verification link");
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Resend Verification", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mAuth.getCurrentUser().sendEmailVerification();
+                                dialog.dismiss();
+                                Toast.makeText(getApplicationContext(), "Verification E-mail Sent!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.dismiss();
+                                attemptLogin(username, password);
+                            }
+                        });
+                        dialog.show();
+                    }
+                }
+            }
+        });
+}
+
+    private void attemptRegister(final String username, final String password) {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -252,8 +270,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    Log.d("CREATE_USER_COMPLETE", String.valueOf(task.isSuccessful()));
                     if (!task.isSuccessful()){
-
                         try {
                             throw task.getException();
                         }  catch(FirebaseAuthWeakPasswordException e) {
@@ -268,12 +286,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         } catch(Exception e) {
                             Log.e(TAG, e.getMessage());
                         }
+                    } else {
+                        mAuth.getCurrentUser().sendEmailVerification();
+                        final AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
+                        dialog.setTitle("Verify E-mail");
+                        dialog.setMessage("please check your e-mails for a verification link");
+                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
                     }
                 }
             });
-            mAuth.getCurrentUser().sendEmailVerification();
-            Toast.makeText(getApplicationContext(),"pleaseverify your email",Toast.LENGTH_LONG).show();
-            mAuth.signOut();
+
         }
     }
 
@@ -331,8 +359,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
     }
-
-
 
     private boolean isEmailValid(String email) {
         return email.contains("@");
@@ -429,7 +455,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 }
 

@@ -21,6 +21,10 @@
             android:title="Change password"
             android:key="setting_account_password"
             android:inputType="textPassword"/>
+        <Preference
+            android:selectAllOnFocus="true"
+            android:title="Log out"
+            android:key="setting_log_out"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Preference category">
