@@ -1,6 +1,7 @@
 package com.example.samuel.at_bristol_app.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,7 +17,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +32,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -120,28 +125,28 @@ public class MainActivity extends AppCompatActivity {
             tabLayout.getTabAt(i).setIcon(icons[i]);
 
         tabLayout.addOnTabSelectedListener(
-                new TabLayout.ViewPagerOnTabSelectedListener(mViewPager) {
+            new TabLayout.ViewPagerOnTabSelectedListener(mViewPager) {
 
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    super.onTabSelected(tab);
-                    int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccentGrey);
-                    tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                    toolbar.setTitle(titles[tab.getPosition()]);
-                    mViewPager.setPagingEnabled(!(tab.getPosition()==0));
-                }
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                super.onTabSelected(tab);
+                int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccentGrey);
+                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                toolbar.setTitle(titles[tab.getPosition()]);
+                mViewPager.setPagingEnabled(!(tab.getPosition()==0));
+            }
 
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-                    super.onTabUnselected(tab);
-                    int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.tabUnselectedIconColor);
-                    tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                super.onTabUnselected(tab);
+                int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.tabUnselectedIconColor);
+                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+            }
 
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-                    super.onTabReselected(tab);
-                }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                super.onTabReselected(tab);
+            }
             }
         );
         //doesnt count as being selected initially so this is a workaround
@@ -313,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvAccountCircle, tvAccountName, tvAccountEmail;
         View view;
-        Preference logout;
+        Preference logout, changePassword, changeEmail, changeName;
 
         //Returns a new instance of this fragment
         public static AccountFragment newInstance() {
@@ -344,6 +349,103 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             });
+            changeEmail = preferenceFragment.findPreference("setting_account_email");
+            changeEmail.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    LinearLayout layout = new LinearLayout(getContext());
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    final EditText editEmail = new EditText(getContext());
+                    editEmail.setHint("new E-mail");
+                    final EditText editPassword = new EditText(getContext());
+                    editPassword.setHint("Password");
+                    layout.addView(editEmail);
+                    layout.addView(editPassword);
+                    final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Change E-mail")
+                            .setView(layout)
+                            .create();
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //if pw is right update
+                        }
+                    });
+                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    return true;
+                }
+            });
+            changeName = preferenceFragment.findPreference("setting_account_name");
+            changeName.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    LinearLayout layout = new LinearLayout(getContext());
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    final EditText editName = new EditText(getContext());
+                    editName.setHint("new Name");
+                    final EditText editPassword = new EditText(getContext());
+                    editPassword.setHint("Password");
+                    layout.addView(editName);
+                    layout.addView(editPassword);
+                    final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Change Name")
+                            .setView(layout)
+                            .create();
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //if pw is right update
+                        }
+                    });
+                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    return true;
+                }
+            });
+            changePassword = preferenceFragment.findPreference("setting_account_password");
+            changePassword.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    LinearLayout layout = new LinearLayout(getContext());
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    final EditText editNewPassword = new EditText(getContext());
+                    editNewPassword.setHint("new password");
+                    final EditText editPassword = new EditText(getContext());
+                    editPassword.setHint("old password");
+                    layout.addView(editNewPassword);
+                    layout.addView(editPassword);
+                    final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setTitle("Change Password")
+                            .setView(layout)
+                            .create();
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //if pw is right update and reauthenticate
+                        }
+                    });
+                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    return true;
+                }
+            });
+
             //TODO: update all textViews with relevant info
             String name = currentUser.getDisplayName();
             tvAccountCircle.setText(String.valueOf(Character.toUpperCase(name.charAt(0))));

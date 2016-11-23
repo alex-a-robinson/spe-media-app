@@ -2,27 +2,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="Account Details">
-        <EditTextPreference
-            android:defaultValue="@string/account_name_default"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
+        <Preference
             android:title="Change account name"
             android:key="setting_account_name" />
-        <EditTextPreference
-            android:defaultValue="@string/account_email_default"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
+        <Preference
             android:title="Change email"
             android:key="setting_account_email" />
-        <EditTextPreference
-            android:defaultValue="@string/account_default_password"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Change password"
-            android:key="setting_account_password"
-            android:inputType="textPassword"/>
         <Preference
-            android:selectAllOnFocus="true"
+            android:title="Change password"
+            android:key="setting_account_password"/>
+        <Preference
             android:title="Log out"
             android:key="setting_log_out"/>
     </PreferenceCategory>
