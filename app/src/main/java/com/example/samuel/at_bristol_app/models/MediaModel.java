@@ -10,24 +10,24 @@ import java.util.Date;
  */
 
 public class MediaModel {
-    private Date uploadDate;
-    private String mediaType;
-    private Object media;
+    private String path;
+    private int metaData;
 
-    public MediaModel(Date uploadDate, String mediaType, Object media) {
-        this.uploadDate = uploadDate;
-        this.mediaType = mediaType;
-        this.media = media;
+    public MediaModel(String path) {
+        this.path = path;
+        this.metaData = setMetaData();
     }
 
-    Date getUploadDate() {return uploadDate;}
-    String getMediaType() {return mediaType;}
-    Object getMedia() {return media;}
+    private int setMetaData(){
+        //TODO: fetch the metaData
+        return 1;
+    }
 
-    void setUploadDate(Date uploadDate) {this.uploadDate = uploadDate;}
-    void setMedia(Object media) {this.media = media;}
-    void setMediaType(String mediaType) {this.mediaType = mediaType;}
+    public int getMetaData() {
+        return metaData;
+    }
 
-
-
+    public String getPath() {
+        return path;
+    }
 }

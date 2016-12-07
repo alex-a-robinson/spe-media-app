@@ -19,7 +19,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,18 +40,23 @@ import android.widget.TextView;
 
 import com.example.samuel.at_bristol_app.CustomViewPager;
 import com.example.samuel.at_bristol_app.R;
-import com.example.samuel.at_bristol_app.models.MediaGroupModel;
-import com.example.samuel.at_bristol_app.models.MediaModel;
+import com.example.samuel.at_bristol_app.models.VisitModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.api.model.StringList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 @SuppressWarnings("ConstantConditions")
@@ -149,14 +153,9 @@ public class MainActivity extends AppCompatActivity {
             }
             }
         );
-        //doesnt count as being selected initially so this is a workaround
+        //doesn't count as being selected initially so this is a workaround
         int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccentGrey);
         tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-
-        //getting userID passed in through intent from loginActivity
-        //TODO: replace this
-        Intent intent = getIntent();
-        userID = intent.getIntExtra("userID",-1);
 
         //declaring each tab's content fragment
         fragments = new Fragment[]{HomeFragment.newInstance(),
@@ -219,11 +218,9 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 
             View view = inflater.inflate(R.layout.fragment_home, container, false);
-            wvHome = (WebView) view.findViewById(R.id.wvHome);
-            /*wvHome.loadUrl(getString(R.string.web_home));
+            wvHome = (WebView) view.findViewById(R.id.wvHome);wvHome.loadUrl(getString(R.string.web_home));
             wvHome.setWebViewClient(new CustomWebViewClient(view));
             wvHome.getSettings().setJavaScriptEnabled(true);
-            */
             return view;
         }
 
@@ -261,8 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MediaFragment extends Fragment {
 
-        ListView mediaGroupList;
-        List<MediaGroupModel> mgms;
+        ListView visitList;
+        List<VisitModel> visitModelList;
 
         //Returns a new instance of this fragment
         public static MediaFragment newInstance() {
@@ -279,16 +276,16 @@ public class MainActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_media, container, false);
 
             //fetch media
-            this.mgms = fetchMediaGroups(userID);
+            this.visitModelList = createVisitModels(currentUser.getUid());
 
-            mediaGroupList = (ListView) view.findViewById(R.id.lvMediaGroups);
+            visitList = (ListView) view.findViewById(R.id.lvVisits);
             MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group_list_element, mgms);
-            mediaGroupList.setAdapter(adapter);
+            visitList.setAdapter(adapter);
 
-            mediaGroupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            visitList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    MediaGroupModel selectedMediaGroup = mgms.get(position); // get model of tapped group
+                    VisitModel selectedVisit = visitModelList.get(position); // get model of tapped group
                     //TODO: move to next activity
 
                 }
@@ -296,22 +293,26 @@ public class MainActivity extends AppCompatActivity {
             return view;
         }
 
-        static List<MediaGroupModel> fetchMediaGroups(Integer userID){
+        private List<VisitModel> createVisitModels(String userID){
+            List<VisitModel> returnList = new ArrayList<>();
+            Set<Date> dateSet = new HashSet<>();
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("media/"+ userID);
+            dbRef.orderByChild("date").equalTo(userID,"uid").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        child.getValue()
+                    }
+                }
 
-            //TODO: implement fetching the real list of media
-            List<MediaModel> listMedia1 = Arrays.asList(
-                    new MediaModel(new Date(200),"foo",null),
-                    new MediaModel(new Date(35),"bar",null),
-                    new MediaModel(new Date(1234),"FB",null));
-            MediaGroupModel mgm1 = new MediaGroupModel("Group 1",listMedia1);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            List<MediaModel> listMedia2 = Arrays.asList(
-                    new MediaModel(new Date(46),"barfoo",null),
-                    new MediaModel(new Date(23),"foobar",null));
+                }
+            });
 
-            MediaGroupModel mgm2 = new MediaGroupModel("Group 2",listMedia2);
-            return Arrays.asList(mgm1,mgm2);
         }
+
     }
 
     public static class AccountFragment extends Fragment {
@@ -475,15 +476,15 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {return "";}
     }
 
-    static class MediaGroupAdapter extends ArrayAdapter<MediaGroupModel> {
+    static class MediaGroupAdapter extends ArrayAdapter<> {
 
-        private List<MediaGroupModel> mediaGroupModels;
+        private List<> s;
         private int resource;
         private LayoutInflater inflater;
 
-        MediaGroupAdapter(Context context, int resource, List<MediaGroupModel> mediaGroupModels) {
-            super(context,resource,mediaGroupModels);
-            this.mediaGroupModels = mediaGroupModels;
+        MediaGroupAdapter(Context context, int resource, List<> s) {
+            super(context,resource,s);
+            this.s = s;
             this.resource = resource;
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -509,14 +510,14 @@ public class MainActivity extends AppCompatActivity {
 
             //TODO: Handle Thumbnails
 
-            holder.tvGroupName.setText(mediaGroupModels.get(position).getGroupName());
+            holder.tvGroupName.setText(s.get(position).getGroupName());
 
             DateFormat df = new SimpleDateFormat("dd-MM-yy", Locale.UK);
-            holder.tvDate.setText(df.format(mediaGroupModels.get(position).getDate()));
+            holder.tvDate.setText(df.format(s.get(position).getDate()));
 
-            String numItemsText = "Items: " + mediaGroupModels.get(position).getGroupSize().toString();
+            String numItemsText = "Items: " + s.get(position).getGroupSize().toString();
             holder.tvNumItems.setText(numItemsText);
-            String thumbNumItemsText = " " + mediaGroupModels.get(position).getGroupSize().toString() + " ";
+            String thumbNumItemsText = " " + s.get(position).getGroupSize().toString() + " ";
             holder.tvThumbNum.setText(thumbNumItemsText);
 
             return convertView;
