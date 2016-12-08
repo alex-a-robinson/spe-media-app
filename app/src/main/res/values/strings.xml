@@ -67,4 +67,7 @@
     <string name="register_button_text">register</string>
     <string name="error_user_exists">User already exists</string>
     <string name="invalid_login">The e-mail or password was incorrect</string>
+    <string name="default_visit_date"><![CDATA[Visit on <dd/MM/yyyy>]]></string>
+    <string name="default_visit_details"><![CDATA[<n> people - <n> items]]></string>
+    <string name="visit_thumb_description">generated visit thumbnail</string>
 </resources>

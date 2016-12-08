@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="200dp"
+    android:layout_marginBottom="8dp">
+
+
+
+
+        <ImageView
+            android:id="@+id/ivVisitThumb"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            android:contentDescription="@string/visit_thumb_description" />
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/gradient"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <TextView
+                android:id="@+id/tvVisitDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/default_visit_date"
+                android:textAppearance="@style/AppTheme.ActionBar.TitleTextStyle"
+                android:textAlignment="textStart" />
+
+            <TextView
+                android:text="@string/default_visit_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvVisitDetails"
+                android:textAppearance="@style/AppTheme.ActionBar.TitleTextStyle"
+                android:textSize="14sp"
+                android:textAlignment="textStart"
+                android:layout_marginTop="1dp" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+</RelativeLayout>

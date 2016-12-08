@@ -31,6 +31,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,13 +51,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
 
 @SuppressWarnings("ConstantConditions")
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null) {
                     //store current user
                     user = currentUser;
+
                     Log.d(TAG, "MAIN onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                 toolbar.setTitle(titles[tab.getPosition()]);
                 mViewPager.setPagingEnabled(!(tab.getPosition()==0));
+
             }
 
             @Override
@@ -258,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MediaFragment extends Fragment {
 
-        ListView visitList;
+        ListView visitListView;
         List<VisitModel> visitModelList;
 
         //Returns a new instance of this fragment
@@ -276,13 +279,14 @@ public class MainActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_media, container, false);
 
             //fetch media
-            this.visitModelList = createVisitModels(currentUser.getUid());
+            visitModelList = new ArrayList<>();
+            createVisitModels(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-            visitList = (ListView) view.findViewById(R.id.lvVisits);
-            MediaGroupAdapter adapter = new MediaGroupAdapter(view.getContext(), R.layout.media_group_list_element, mgms);
-            visitList.setAdapter(adapter);
+            visitListView = (ListView) view.findViewById(R.id.lvVisits);
+            VisitModelAdapter adapter = new VisitModelAdapter(view.getContext(), R.layout.visit_list_element, visitModelList);
+            visitListView.setAdapter(adapter);
 
-            visitList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            visitListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     VisitModel selectedVisit = visitModelList.get(position); // get model of tapped group
@@ -293,16 +297,31 @@ public class MainActivity extends AppCompatActivity {
             return view;
         }
 
-        private List<VisitModel> createVisitModels(String userID){
-            List<VisitModel> returnList = new ArrayList<>();
-            Set<Date> dateSet = new HashSet<>();
-            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("media/"+ userID);
-            dbRef.orderByChild("date").equalTo(userID,"uid").addListenerForSingleValueEvent(new ValueEventListener() {
+        private void createVisitModels(String userID){
+            final Map<String,List<String>> rfidDateMap = new HashMap<>();
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("rfids/");
+            dbRef.orderByChild("uid").equalTo(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        child.getValue()
+                        Date date = new Date(child.child("date").getValue(Long.class));
+                        String dateString = DateFormat.getDateInstance(DateFormat.SHORT).format(date);
+                        if (rfidDateMap.containsKey(dateString)){
+                            List<String> oldList = rfidDateMap.get(dateString);
+                            oldList.add(child.getKey());
+                            rfidDateMap.put(dateString, oldList);
+                        } else {
+                            rfidDateMap.put(dateString, new ArrayList<>(Collections.singletonList(child.getKey())));
+                        }
                     }
+                    for (Map.Entry<String, List<String>> entry : rfidDateMap.entrySet()) {
+                        try {
+                            visitModelList.add(new VisitModel(DateFormat.getDateInstance(DateFormat.SHORT).parse(entry.getKey()),entry.getValue()));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    ((BaseAdapter) visitListView.getAdapter()).notifyDataSetChanged();
                 }
 
                 @Override
@@ -476,15 +495,15 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {return "";}
     }
 
-    static class MediaGroupAdapter extends ArrayAdapter<> {
+    static class VisitModelAdapter extends ArrayAdapter<VisitModel> {
 
-        private List<> s;
+        private List<VisitModel> visitModelList;
         private int resource;
         private LayoutInflater inflater;
 
-        MediaGroupAdapter(Context context, int resource, List<> s) {
-            super(context,resource,s);
-            this.s = s;
+        VisitModelAdapter(Context context, int resource, List<VisitModel> visitModelList) {
+            super(context,resource,visitModelList);
+            this.visitModelList = visitModelList;
             this.resource = resource;
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -493,42 +512,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
-            MediaGroupAdapter.ViewHolder holder;
+            VisitModelAdapter.ViewHolder holder;
 
             if(convertView == null){
-                holder = new MediaGroupAdapter.ViewHolder();
+                holder = new VisitModelAdapter.ViewHolder();
                 convertView = inflater.inflate(resource, null);
-                holder.ivThumbnail = (ImageView) convertView.findViewById(R.id.ivThumbnail);
-                holder.tvThumbNum = (TextView) convertView.findViewById(R.id.tvThumbNum);
-                holder.tvGroupName = (TextView) convertView.findViewById(R.id.tvGroupName);
-                holder.tvNumItems = (TextView) convertView.findViewById(R.id.tvNumItems);
-                holder.tvDate = (TextView) convertView.findViewById(R.id.tvDate);
+                holder.ivVisitThumb = (ImageView) convertView.findViewById(R.id.ivVisitThumb);
+                holder.tvVisitDate = (TextView) convertView.findViewById(R.id.tvVisitDate);
+                holder.tvVisitDetails = (TextView) convertView.findViewById(R.id.tvVisitDetails);
                 convertView.setTag(holder);
             } else {
-                holder = (MediaGroupAdapter.ViewHolder) convertView.getTag();
+                holder = (VisitModelAdapter.ViewHolder) convertView.getTag();
             }
 
             //TODO: Handle Thumbnails
 
-            holder.tvGroupName.setText(s.get(position).getGroupName());
+            String string = "Visit On " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(visitModelList.get(position).getDate());
+            holder.tvVisitDate.setText(string);
 
-            DateFormat df = new SimpleDateFormat("dd-MM-yy", Locale.UK);
-            holder.tvDate.setText(df.format(s.get(position).getDate()));
-
-            String numItemsText = "Items: " + s.get(position).getGroupSize().toString();
-            holder.tvNumItems.setText(numItemsText);
-            String thumbNumItemsText = " " + s.get(position).getGroupSize().toString() + " ";
-            holder.tvThumbNum.setText(thumbNumItemsText);
+            string = "People: " + visitModelList.get(position).getRFIDCount() + " - Items: " + visitModelList.get(position).getItemCount();
+            holder.tvVisitDetails.setText(string);
 
             return convertView;
         }
 
         private class ViewHolder{
-            private ImageView ivThumbnail;
-            private TextView tvThumbNum;
-            private TextView tvGroupName;
-            private TextView tvNumItems;
-            private TextView tvDate;
+            private ImageView ivVisitThumb;
+            private  TextView tvVisitDate;
+            private  TextView tvVisitDetails;
 
         }
     }
