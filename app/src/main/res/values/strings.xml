@@ -70,4 +70,7 @@
     <string name="default_visit_date"><![CDATA[Visit on <dd/MM/yyyy>]]></string>
     <string name="default_visit_details"><![CDATA[<n> people - <n> items]]></string>
     <string name="visit_thumb_description">generated visit thumbnail</string>
+    <string name="default_rfid_details"><![CDATA[Items: <n>]]></string>
+    <string name="default_rfid_name">Wristband 1</string>
+    <string name="right_arrow">right arrow</string>
 </resources>

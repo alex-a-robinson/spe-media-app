@@ -1,6 +1,7 @@
 package com.example.samuel.at_bristol_app.models;
 
 import java.io.File;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  * will be displayed when the user is inside a group
  */
 
-public class MediaModel {
+public class MediaModel implements Serializable {
     private String path;
     private int metaData;
 

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_media_list"
+    android:id="@+id/activity_rfidlist"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.samuel.at_bristol_app.activities.MediaListActivity">
+    tools:context="com.example.samuel.at_bristol_app.activities.RFIDListActivity">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lvMedia" />
+        android:id="@+id/lvRfid" />
+
 </RelativeLayout>

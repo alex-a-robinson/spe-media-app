@@ -1,5 +1,6 @@
 package com.example.samuel.at_bristol_app.activities;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -164,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
         fragments = new Fragment[]{HomeFragment.newInstance(),
                 MediaFragment.newInstance(),
                 AccountFragment.newInstance()};
+
+        if (getIntent().hasExtra("Tab")) {
+            tabLayout.getTabAt((Integer) getIntent().getExtras().get("Tab")).select();
+        }
     }
 
     @Override
@@ -172,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
             WebView wvHome = ((HomeFragment) fragments[0]).getWebView();
             if (wvHome.canGoBack())
                 wvHome.goBack();
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -193,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this,SettingsActivity.class);
             intent.putExtra("userID",userID);
+            intent.putExtra("Tab",tabLayout.getSelectedTabPosition());
             startActivity(intent);
         } else if (id == R.id.action_tickets) {
             String url = getString(R.string.web_tickets);
@@ -221,7 +230,8 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 
             View view = inflater.inflate(R.layout.fragment_home, container, false);
-            wvHome = (WebView) view.findViewById(R.id.wvHome);wvHome.loadUrl(getString(R.string.web_home));
+            wvHome = (WebView) view.findViewById(R.id.wvHome);
+            //wvHome.loadUrl(getString(R.string.web_home));
             wvHome.setWebViewClient(new CustomWebViewClient(view));
             wvHome.getSettings().setJavaScriptEnabled(true);
             return view;
@@ -290,8 +300,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     VisitModel selectedVisit = visitModelList.get(position); // get model of tapped group
-                    //TODO: move to next activity
-
+                    Intent intent = new Intent(getContext(),RFIDListActivity.class);
+                    intent.putExtra("Model",selectedVisit);
+                    startActivity(intent);
                 }
             });
             return view;
@@ -330,6 +341,55 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+        }
+
+        static class VisitModelAdapter extends ArrayAdapter<VisitModel> {
+
+            private List<VisitModel> visitModelList;
+            private int resource;
+            private LayoutInflater inflater;
+
+            VisitModelAdapter(Context context, int resource, List<VisitModel> visitModelList) {
+                super(context,resource,visitModelList);
+                this.visitModelList = visitModelList;
+                this.resource = resource;
+                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            }
+
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+
+                VisitModelAdapter.ViewHolder holder;
+
+                if(convertView == null){
+                    holder = new VisitModelAdapter.ViewHolder();
+                    convertView = inflater.inflate(resource, null);
+                    holder.ivVisitThumb = (ImageView) convertView.findViewById(R.id.ivVisitThumb);
+                    holder.tvVisitDate = (TextView) convertView.findViewById(R.id.tvVisitDate);
+                    holder.tvVisitDetails = (TextView) convertView.findViewById(R.id.tvVisitDetails);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (VisitModelAdapter.ViewHolder) convertView.getTag();
+                }
+
+                //TODO: Handle Thumbnails
+
+                String string = "Visit On " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(visitModelList.get(position).getDate());
+                holder.tvVisitDate.setText(string);
+
+                string = "People: " + visitModelList.get(position).getRFIDCount() + " - Items: " + visitModelList.get(position).getItemCount();
+                holder.tvVisitDetails.setText(string);
+
+                return convertView;
+            }
+
+            private class ViewHolder{
+                private ImageView ivVisitThumb;
+                private  TextView tvVisitDate;
+                private  TextView tvVisitDetails;
+
+            }
         }
 
     }
@@ -495,56 +555,22 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {return "";}
     }
 
-    static class VisitModelAdapter extends ArrayAdapter<VisitModel> {
 
-        private List<VisitModel> visitModelList;
-        private int resource;
-        private LayoutInflater inflater;
 
-        VisitModelAdapter(Context context, int resource, List<VisitModel> visitModelList) {
-            super(context,resource,visitModelList);
-            this.visitModelList = visitModelList;
-            this.resource = resource;
-            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class AccountPreferenceFragment extends PreferenceFragment {
+        public AccountPreferenceFragment(){
+
         }
 
-        @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-
-            VisitModelAdapter.ViewHolder holder;
-
-            if(convertView == null){
-                holder = new VisitModelAdapter.ViewHolder();
-                convertView = inflater.inflate(resource, null);
-                holder.ivVisitThumb = (ImageView) convertView.findViewById(R.id.ivVisitThumb);
-                holder.tvVisitDate = (TextView) convertView.findViewById(R.id.tvVisitDate);
-                holder.tvVisitDetails = (TextView) convertView.findViewById(R.id.tvVisitDetails);
-                convertView.setTag(holder);
-            } else {
-                holder = (VisitModelAdapter.ViewHolder) convertView.getTag();
-            }
-
-            //TODO: Handle Thumbnails
-
-            String string = "Visit On " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(visitModelList.get(position).getDate());
-            holder.tvVisitDate.setText(string);
-
-            string = "People: " + visitModelList.get(position).getRFIDCount() + " - Items: " + visitModelList.get(position).getItemCount();
-            holder.tvVisitDetails.setText(string);
-
-            return convertView;
-        }
-
-        private class ViewHolder{
-            private ImageView ivVisitThumb;
-            private  TextView tvVisitDate;
-            private  TextView tvVisitDetails;
-
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setHasOptionsMenu(false);
+            addPreferencesFromResource(R.xml.pref_account);
         }
     }
-
-
 }
 
 

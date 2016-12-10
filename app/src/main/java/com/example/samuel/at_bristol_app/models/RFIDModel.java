@@ -1,5 +1,8 @@
 package com.example.samuel.at_bristol_app.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -7,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +18,7 @@ import java.util.List;
  * The model for a RFID list element, contains all the relevant functions and data
  */
 
-public class RFIDModel {
+public class RFIDModel implements Serializable {
     private String rfid;
     private List<MediaModel> mediaModelList;
     private String userID;
@@ -61,4 +65,6 @@ public class RFIDModel {
     public String getRfid() {
         return rfid;
     }
+
+
 }

@@ -77,7 +77,7 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="com.example.samuel.at_bristol_app.AccountPreferenceFragment"
+        android:name="com.example.samuel.at_bristol_app.activities.MainActivity$AccountPreferenceFragment"
         android:id="@+id/accountPrefFrag" />
 
 

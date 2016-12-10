@@ -47,7 +47,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.samuel.at_bristol_app.activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.MediaListActivity"></activity>
+        <activity android:name=".activities.MediaListActivity" />
+        <activity android:name=".activities.RFIDListActivity"/>
     </application>
 
 </manifest>

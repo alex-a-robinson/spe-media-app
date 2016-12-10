@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
-import com.example.samuel.at_bristol_app.AppCompatPreferenceActivity;
 import com.example.samuel.at_bristol_app.R;
 
 import java.util.List;
@@ -38,6 +37,9 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    Integer tab;
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -46,6 +48,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
+
 
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
@@ -122,6 +125,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        tab = (Integer) getIntent().getExtras().get("Tab");
     }
 
     /**
