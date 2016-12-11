@@ -10,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -301,7 +302,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     VisitModel selectedVisit = visitModelList.get(position); // get model of tapped group
                     Intent intent = new Intent(getContext(),RFIDListActivity.class);
-                    intent.putExtra("Model",selectedVisit);
+                    intent.putStringArrayListExtra("rfidList", selectedVisit.getRFIDList());
+                    intent.putExtra("date",selectedVisit.getDate());
                     startActivity(intent);
                 }
             });
@@ -378,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                 String string = "Visit On " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(visitModelList.get(position).getDate());
                 holder.tvVisitDate.setText(string);
 
-                string = "People: " + visitModelList.get(position).getRFIDCount() + " - Items: " + visitModelList.get(position).getItemCount();
+                string = "People: " + visitModelList.get(position).getRFIDCount();
                 holder.tvVisitDetails.setText(string);
 
                 return convertView;

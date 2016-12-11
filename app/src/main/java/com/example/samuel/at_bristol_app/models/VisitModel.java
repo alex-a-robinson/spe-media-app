@@ -12,47 +12,25 @@ import java.util.List;
  * The model for a Visit list element, contains all the relevant functions and data
  */
 
-public class VisitModel implements Serializable{
+public class VisitModel{
     private Date date;
-    private List<RFIDModel> rfidModelList;
+    private List<String> rfidStringList;
 
     public VisitModel(Date date, List<String> rfidStringList){
         this.date = date;
-        generateChildren(rfidStringList);
-    }
-    private VisitModel(Parcel parcel){
-        this.date = new Date(parcel.readLong());
-        parcel.readList(rfidModelList,List.class.getClassLoader());
+        this.rfidStringList = rfidStringList;
     }
 
-    private void generateChildren(List<String> rfidStringList){
-        rfidModelList = new ArrayList<>();
-        for (String rfidString : rfidStringList) {
-            rfidModelList.add(new RFIDModel(rfidString));
-        }
-    }
-
-    public List<RFIDModel> getRFIDList(){
-        return rfidModelList;
-    }
-
-    public RFIDModel getRFID(int index){
-        return rfidModelList.get(index);
+    public ArrayList<String> getRFIDList(){
+        return (ArrayList<String>) rfidStringList;
     }
 
     public int getRFIDCount(){
-        return rfidModelList.size();
-    }
-
-    public int getItemCount(){
-        int count = 0;
-        for (RFIDModel child : rfidModelList) {
-            count += child.getMediaCount();
-        }
-        return count;
+        return rfidStringList.size();
     }
 
     public Date getDate(){
         return date;
     }
+
 }
