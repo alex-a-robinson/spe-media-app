@@ -89,7 +89,7 @@ public class RFIDListActivity extends AppCompatActivity {
             holder.tvRFIDNumber.setText(string);
 
             string = " Items: " + rfidModelList.get(position).getMediaCount();//TODO: this is being called before the media list is populated therefore is 0
-            holder.tvRFIDDetails.setText(string);
+            //holder.tvRFIDDetails.setText(string);
 
             return convertView;
         }

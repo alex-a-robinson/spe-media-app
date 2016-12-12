@@ -19,7 +19,7 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="cornerNumber"># items</string>
     <string name="groupTitle">Exhibit Name</string>
-    <string name="groupSize">Number Of items</string>
+    <string name="media_size">Size: xMB</string>
     <string name="groupDate">Date Updated</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -61,7 +61,7 @@
     <string name="at_bristol_logo_description">At-Bristol logo</string>
     <string name="corner_file_type">FileType</string>
     <string name="media_title">Media Title</string>
-    <string name="media_duration_default">Media Duration</string>
+    <string name="media_duration_default">Media Duration/ length</string>
     <string name="options">options</string>
     <string name="sign_in_button_text">sign in</string>
     <string name="register_button_text">register</string>
