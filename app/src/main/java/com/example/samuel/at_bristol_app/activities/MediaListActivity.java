@@ -25,6 +25,7 @@ import com.example.samuel.at_bristol_app.models.RFIDModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MediaListActivity extends AppCompatActivity {
 
@@ -102,7 +103,7 @@ public class MediaListActivity extends AppCompatActivity {
                 holder.ivThumbnail = (ImageView) convertView.findViewById(R.id.ivThumbnail);
                 holder.tvThumbType = (TextView) convertView.findViewById(R.id.tvThumbType);
                 holder.tvMediaName = (TextView) convertView.findViewById(R.id.tvMediaName);
-                holder.tvDuration  = (TextView) convertView.findViewById(R.id.tvDuration);
+                holder.tvExhibit  = (TextView) convertView.findViewById(R.id.tvExhibit);
                 holder.tvFileSize  = (TextView) convertView.findViewById(R.id.tvFileSize);
                 holder.tvDate      = (TextView) convertView.findViewById(R.id.tvDate);
                 convertView.setTag(holder);
@@ -111,15 +112,22 @@ public class MediaListActivity extends AppCompatActivity {
             }
 
             //TODO:set media detail textviews
-
+            MediaModel mediaModel = mediaModelList.get(position);
+            holder.tvMediaName.setText(mediaModel.getLocalFile().getName());
             return convertView;
+        }
+        public static String readableSize(long bytes) {
+            if (bytes < 1024) return bytes + " B";
+            int exp = (int) (Math.log(bytes) / Math.log(1024));
+            Character pre = "kMGTPE".charAt(exp-1);
+            return String.format(Locale.getDefault(),"%.1f %sB", bytes / Math.pow(1024, exp), pre);
         }
 
         private class ViewHolder{
             private ImageView ivThumbnail;
             private  TextView tvThumbType;
             private  TextView tvMediaName;
-            private  TextView tvDuration;
+            private  TextView tvExhibit;
             private  TextView tvFileSize;
             private  TextView tvDate;
         }
