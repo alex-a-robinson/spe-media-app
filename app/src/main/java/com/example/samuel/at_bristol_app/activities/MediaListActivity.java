@@ -55,10 +55,10 @@ public class MediaListActivity extends AppCompatActivity {
                     dialogBuilder.setMessage("File Downloaded").setPositiveButton("Show Media", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW).setData(
+                            Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(
                                     FileProvider.getUriForFile(getApplicationContext(),
                                             getApplicationContext().getPackageName()+".provider",
-                                            selectedMediaModel.getLocalFile())).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                            selectedMediaModel.getLocalFile()),selectedMediaModel.getMetaData().getContentType()).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             startActivity(intent);
                         }
                     }).setNegativeButton("Delete", new DialogInterface.OnClickListener() {

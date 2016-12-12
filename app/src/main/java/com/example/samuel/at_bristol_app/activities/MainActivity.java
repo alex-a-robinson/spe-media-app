@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
             if (wvHome.canGoBack())
                 wvHome.goBack();
         } else {
-            super.onBackPressed();
+            //TODO:display dialog with log out prompt
         }
     }
 

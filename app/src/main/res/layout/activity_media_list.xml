@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_media_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.samuel.at_bristol_app.activities.MediaListActivity">
+    tools:context="com.example.samuel.at_bristol_app.activities.MediaListActivity"
+    android:baselineAligned="false">
 
     <ListView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:id="@+id/lvMedia" />
-</RelativeLayout>
+</LinearLayout>
