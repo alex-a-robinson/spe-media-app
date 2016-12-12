@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.samuel.at_bristol_app.R;
@@ -26,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.R.id.list;
+
 public class RFIDListActivity extends AppCompatActivity {
     private List<RFIDModel> rfidModelList = new ArrayList<>();
+    private int callbackCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,24 +40,48 @@ public class RFIDListActivity extends AppCompatActivity {
 
         final List<String> rfidStringList = getIntent().getStringArrayListExtra("rfidList");
         for (String rfid : rfidStringList) {
-            rfidModelList.add(new RFIDModel(rfid));
+            rfidModelList.add(new RFIDModel(rfid,this));
         }
         Date date = (Date) getIntent().getExtras().get("date");
 
         setTitle(DateFormat.getDateInstance(DateFormat.MEDIUM).format(date));
+
+        ProgressBar progressSpinner = (ProgressBar) findViewById(R.id.pbRFIDList);
+        progressSpinner.setVisibility(View.VISIBLE);
+
+
+    }
+
+    public void rfidCallback(){
+        callbackCount++;
+        if (callbackCount == rfidModelList.size()){
+            showList();
+        }
+    }
+
+    private void showList(){
+
+        ProgressBar progressSpinner = (ProgressBar) findViewById(R.id.pbRFIDList);
+        progressSpinner.setVisibility(View.GONE);
+
+        if (rfidModelList.size() == 1) {selectRfid(0);}
 
         ListView lvRFIDList = (ListView) findViewById(R.id.lvRfid);
         lvRFIDList.setAdapter(new RFIDModelAdapter(this,R.layout.rfid_list_element,rfidModelList));
         lvRFIDList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RFIDModel selectedRFID = rfidModelList.get(position); // get model of tapped group
-                Intent intent = new Intent(getApplicationContext(),MediaListActivity.class);
-                intent.putStringArrayListExtra("pathList", (ArrayList<String>) selectedRFID.getMediaList());
-                intent.putExtra("rfidNumber", (position+1));
-                startActivity(intent);
+                selectRfid(position);
             }
         });
+    }
+
+    public void selectRfid(int position){
+        RFIDModel selectedRFID = rfidModelList.get(position); // get model of tapped group
+        Intent intent = new Intent(getApplicationContext(),MediaListActivity.class);
+        intent.putStringArrayListExtra("pathList", (ArrayList<String>) selectedRFID.getMediaList());
+        intent.putExtra("rfidNumber", (position+1));
+        startActivity(intent);
     }
 
     static class RFIDModelAdapter extends ArrayAdapter<RFIDModel> {
@@ -88,8 +116,8 @@ public class RFIDListActivity extends AppCompatActivity {
             String string = "Wristband " + (position+1);
             holder.tvRFIDNumber.setText(string);
 
-            string = " Items: " + rfidModelList.get(position).getMediaCount();//TODO: this is being called before the media list is populated therefore is 0
-            //holder.tvRFIDDetails.setText(string);
+            string = " Items: " + rfidModelList.get(position).getMediaCount();
+            holder.tvRFIDDetails.setText(string);
 
             return convertView;
         }

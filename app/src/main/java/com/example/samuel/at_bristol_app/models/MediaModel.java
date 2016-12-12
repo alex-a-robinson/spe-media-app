@@ -28,10 +28,10 @@ public class MediaModel{
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     private StorageMetadata metaData;
-    private Context context;
+    private MediaListActivity context;
     private File localFile;
 
-    public MediaModel(final String path, Context context) {
+    public MediaModel(final String path, final MediaListActivity context) {
         this.path = path;
         this.context = context;
         this.localFile = new File(context.getFilesDir(),path);
@@ -43,6 +43,7 @@ public class MediaModel{
                 if (task.isSuccessful()) {
                     metaData = task.getResult();
                 }
+                context.mediaCallback();
             }
         });
     }
@@ -69,7 +70,6 @@ public class MediaModel{
                 }
             }
         });
-        //TODO: save file using same structure as remote storage
     }
     public void deleteLocalFile(){
         if (localFile.delete()){
@@ -77,7 +77,6 @@ public class MediaModel{
         } else {
             Toast.makeText(context,"Error: file not found",Toast.LENGTH_SHORT).show();
         }
-        //TODO: delete file
     }
     public boolean isDownloaded(){
         return (localFile.exists());

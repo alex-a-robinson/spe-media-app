@@ -17,19 +17,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.samuel.at_bristol_app.R;
 import com.example.samuel.at_bristol_app.models.MediaModel;
 import com.example.samuel.at_bristol_app.models.RFIDModel;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class MediaListActivity extends AppCompatActivity {
 
     private List<MediaModel> mediaModelList = new ArrayList<>();
+    int callbackCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +47,27 @@ public class MediaListActivity extends AppCompatActivity {
 
         setTitle("Wristband " + getIntent().getExtras().get("rfidNumber"));
 
+        ProgressBar progressSpinner = (ProgressBar) findViewById(R.id.pbMediaList);
+        progressSpinner.setVisibility(View.VISIBLE);
+    }
+
+    public void mediaCallback(){
+        callbackCount++;
+        if (callbackCount == mediaModelList.size()){
+            showList();
+        }
+    }
+
+    private void showList(){
+        ProgressBar progressSpinner = (ProgressBar) findViewById(R.id.pbMediaList);
+        progressSpinner.setVisibility(View.GONE);
+
         ListView lvRFIDList = (ListView) findViewById(R.id.lvMedia);
         lvRFIDList.setAdapter(new MediaModelAdapter(this,R.layout.media_list_element,mediaModelList));
         lvRFIDList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final MediaModel selectedMediaModel = mediaModelList.get(position); // get model of tapped group
-                //TODO: if the media is downloaded, show it, else download it.
                 if (selectedMediaModel.isDownloaded()){
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(parent.getContext());
                     dialogBuilder.setMessage("File Downloaded").setPositiveButton("Show Media", new DialogInterface.OnClickListener() {
@@ -75,7 +93,6 @@ public class MediaListActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     static class MediaModelAdapter extends ArrayAdapter<MediaModel> {
@@ -114,6 +131,11 @@ public class MediaListActivity extends AppCompatActivity {
             //TODO:set media detail textviews
             MediaModel mediaModel = mediaModelList.get(position);
             holder.tvMediaName.setText(mediaModel.getLocalFile().getName());
+            String fileSize = "Size: " + readableSize(mediaModel.getMetaData().getSizeBytes());
+            holder.tvFileSize.setText(fileSize);
+            String date = "Date: " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(mediaModel.getMetaData().getUpdatedTimeMillis()));
+            holder.tvDate.setText(date);
+
             return convertView;
         }
 
