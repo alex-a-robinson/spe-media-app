@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "929277917485",
+    "firebase_url": "https://spe-elabs.firebaseio.com",
+    "project_id": "spe-elabs",
+    "storage_bucket": "spe-elabs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929277917485:android:9e5b335e7096c322",
+        "android_client_info": {
+          "package_name": "com.example.samuel.at_bristol_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929277917485-8obgp4m4h82a1srabq3rsvd0u879skk5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.samuel.at_bristol_app",
+            "certificate_hash": "2B6EA37327CF70124AFCC2791E5F0C881763B69F"
+          }
+        },
+        {
+          "client_id": "929277917485-sk49743rkkhuv8cvs3rvkj68qgn8eg4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWvgxqokio-EEQGn7B2ZH-7B1LphhrIFk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929277917485-sk49743rkkhuv8cvs3rvkj68qgn8eg4q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
