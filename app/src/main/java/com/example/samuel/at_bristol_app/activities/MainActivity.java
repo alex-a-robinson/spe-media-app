@@ -49,11 +49,18 @@ import android.widget.Toast;
 import com.example.samuel.at_bristol_app.CustomViewPager;
 import com.example.samuel.at_bristol_app.R;
 import com.example.samuel.at_bristol_app.models.VisitModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -279,9 +286,9 @@ public class MainActivity extends AppCompatActivity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             view.evaluateJavascript("document.getElementById('header-wrapper').parentNode.removeChild(document.getElementById('header-wrapper'));" +
-                    "    document.getElementById('content-wrapper').removeAttribute('style');" +
-                    "    document.getElementById('footer').parentNode.removeChild(document.getElementById('footer'));" +
-                    "    document.getElementById('cookie-notification').parentNode.removeChild(document.getElementById('cookie-notification'));", new ValueCallback<String>() {
+                                "    document.getElementById('content-wrapper').removeAttribute('style');" +
+                                "    document.getElementById('footer').parentNode.removeChild(document.getElementById('footer'));" +
+                                "    document.getElementsByClassName('cookie-notification')[0].parentNode.removeChild(document.getElementsByClassName('cookie-notification')[0]);", new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String value) { }
             });
@@ -480,7 +487,44 @@ public class MainActivity extends AppCompatActivity {
                     dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            //if pw is right update
+                            final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                            mAuth.signInWithEmailAndPassword(currentUser.getEmail(), editPassword.getText().toString())
+                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            currentUser.updateEmail(editEmail.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(getContext(),"Email Updated",Toast.LENGTH_SHORT).show();
+                                                        currentUser.sendEmailVerification();
+                                                        tvAccountName.setText(currentUser.getDisplayName());
+                                                        tvAccountCircle.setText(String.valueOf(Character.toUpperCase(currentUser.getDisplayName().charAt(0))));
+                                                    } else {
+                                                        try {
+                                                            throw task.getException();
+                                                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                                                            editEmail.setError("invalid email, please try again");
+                                                        } catch (FirebaseAuthUserCollisionException e){
+                                                            editEmail.setError("email already in use");
+                                                        } catch (Exception e){
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    if (e.getClass() == FirebaseAuthInvalidUserException.class) {
+                                        editPassword.setError("Error: user doesn't exist");
+                                    } else if (e.getClass() == FirebaseAuthInvalidCredentialsException.class) {
+                                        editPassword.setError("Error: invalid password");
+                                    }
+                                }
+                            });
                         }
                     });
                     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -493,6 +537,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             });
+
             changeName = preferenceFragment.findPreference("setting_account_name");
             changeName.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -512,7 +557,43 @@ public class MainActivity extends AppCompatActivity {
                     dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            //if pw is right update
+                            final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                            mAuth.signInWithEmailAndPassword(currentUser.getEmail(), editPassword.getText().toString())
+                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+                                            builder.setDisplayName(editName.getText().toString());
+                                            currentUser.updateProfile(builder.build()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(getContext(),"Name Updated",Toast.LENGTH_SHORT).show();
+                                                        tvAccountName.setText(currentUser.getDisplayName());
+                                                        tvAccountCircle.setText(String.valueOf(Character.toUpperCase(currentUser.getDisplayName().charAt(0))));
+                                                    } else {
+                                                        try {
+                                                            throw task.getException();
+                                                        } catch (FirebaseAuthInvalidUserException e) {
+                                                            editName.setError(e.getMessage());
+                                                        } catch (Exception e){
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    if (e.getClass() == FirebaseAuthInvalidUserException.class) {
+                                        editPassword.setError("Error: user doesn't exist");
+                                    } else if (e.getClass() == FirebaseAuthInvalidCredentialsException.class) {
+                                        editPassword.setError("Error: invalid password");
+                                    }
+                                }
+                            });
                         }
                     });
                     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -525,6 +606,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             });
+
             changePassword = preferenceFragment.findPreference("setting_account_password");
             changePassword.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -547,17 +629,37 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                            mAuth.signInWithEmailAndPassword(currentUser.getEmail(),editNewPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    authResult.getUser().updatePassword(editNewPassword.getText().toString());
-                                    Toast.makeText(getContext(),"Password updated",Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                }
+                            mAuth.signInWithEmailAndPassword(currentUser.getEmail(),editPassword.getText().toString())
+                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            authResult.getUser().updatePassword(editNewPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(getContext(),"Password updated",Toast.LENGTH_SHORT).show();
+                                                        dialog.dismiss();
+                                                    } else {
+                                                        try {
+                                                            throw task.getException();
+                                                        } catch (FirebaseAuthWeakPasswordException e) {
+                                                            editNewPassword.setError(e.getReason());
+                                                        } catch (Exception e){
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                            ;
+                                        }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    //TODO:handle password change exceptions
+                                    if (e.getClass() == FirebaseAuthInvalidUserException.class){
+                                        editNewPassword.setError("Error: user doesn't exist");
+                                    } else if (e.getClass() == FirebaseAuthInvalidCredentialsException.class){
+                                        editNewPassword.setError("Error: invalid password");
+                                    }
                                 }
                             });
                         }
@@ -573,11 +675,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //TODO: update all textViews with relevant info
+            if (currentUser.getDisplayName()!=null){
+                UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+                builder.setDisplayName(currentUser.getEmail().split("@")[0]);
+                currentUser.updateProfile(builder.build());
+            }
             String name = currentUser.getDisplayName();
             tvAccountCircle.setText(String.valueOf(Character.toUpperCase(name.charAt(0))));
             tvAccountEmail.setText(String.valueOf(currentUser.getEmail()));
-            tvAccountName.setText(String.valueOf(name));
+            tvAccountName.setText(name);
             return view;
         }
     }
@@ -601,9 +707,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {return "";}
     }
-
-
-
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class AccountPreferenceFragment extends PreferenceFragment {
