@@ -23,6 +23,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,10 +44,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.samuel.at_bristol_app.CustomViewPager;
 import com.example.samuel.at_bristol_app.R;
 import com.example.samuel.at_bristol_app.models.VisitModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -180,7 +187,20 @@ public class MainActivity extends AppCompatActivity {
             if (wvHome.canGoBack())
                 wvHome.goBack();
         } else {
-            //TODO:display dialog with log out prompt
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("are you sure you want to log out?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    logout();
+                }
+            }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 
@@ -231,10 +251,15 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 
             View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+            ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.pbHomeFrag);
+            progressBar.setVisibility(View.VISIBLE);
+
             wvHome = (WebView) view.findViewById(R.id.wvHome);
-            //wvHome.loadUrl(getString(R.string.web_home));
-            wvHome.setWebViewClient(new CustomWebViewClient(view));
+            wvHome.loadUrl(getString(R.string.web_home));
+            wvHome.setWebViewClient(new CustomWebViewClient(view,progressBar));
             wvHome.getSettings().setJavaScriptEnabled(true);
+            wvHome.setVisibility(View.INVISIBLE);
             return view;
         }
 
@@ -245,9 +270,9 @@ public class MainActivity extends AppCompatActivity {
 
     static class CustomWebViewClient extends WebViewClient {
         private ProgressBar progressBar;
-        CustomWebViewClient(View view){
+        CustomWebViewClient(View view,ProgressBar progressBar){
             this.progressBar = new ProgressBar(view.getContext());
-            progressBar.setVisibility(View.VISIBLE);
+            this.progressBar = progressBar;
         }
 
         @Override
@@ -261,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onReceiveValue(String value) { }
             });
             progressBar.setVisibility(View.GONE);
+            view.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -396,6 +422,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void logout(){
+        Intent intent = new Intent(this,LoginActivity.class);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("username").remove("password").apply();
+        startActivity(intent);
+    }
+
     public static class AccountFragment extends Fragment {
 
         TextView tvAccountCircle, tvAccountName, tvAccountEmail;
@@ -423,11 +457,7 @@ public class MainActivity extends AppCompatActivity {
             logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(view.getContext(),LoginActivity.class);
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(view.getContext());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.remove("username").remove("password").apply();
-                    startActivity(intent);
+                    ((MainActivity)view.getContext()).logout();
                     return true;
                 }
             });
@@ -503,8 +533,10 @@ public class MainActivity extends AppCompatActivity {
                     layout.setOrientation(LinearLayout.VERTICAL);
                     final EditText editNewPassword = new EditText(getContext());
                     editNewPassword.setHint("new password");
+                    editNewPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     final EditText editPassword = new EditText(getContext());
                     editPassword.setHint("old password");
+                    editPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     layout.addView(editNewPassword);
                     layout.addView(editPassword);
                     final AlertDialog dialog = new AlertDialog.Builder(getContext())
@@ -514,7 +546,20 @@ public class MainActivity extends AppCompatActivity {
                     dialog.setButton(DialogInterface.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            //if pw is right update and reauthenticate
+                            final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                            mAuth.signInWithEmailAndPassword(currentUser.getEmail(),editNewPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    authResult.getUser().updatePassword(editNewPassword.getText().toString());
+                                    Toast.makeText(getContext(),"Password updated",Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    //TODO:handle password change exceptions
+                                }
+                            });
                         }
                     });
                     dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {

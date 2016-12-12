@@ -74,4 +74,5 @@
     <string name="default_rfid_name">Wristband 1</string>
     <string name="right_arrow">right arrow</string>
     <string name="default_exhibit_text">Exhibit Name</string>
+    <string name="default_exhibit_name">Exhibit name</string>
 </resources>
