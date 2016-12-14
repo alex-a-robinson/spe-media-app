@@ -282,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
             this.progressBar = progressBar;
         }
 
+
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
@@ -298,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            view.setVisibility(View.INVISIBLE);
             super.onPageStarted(view, url, favicon);
             progressBar.setVisibility(View.VISIBLE);
         }
@@ -478,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
                     editEmail.setHint("new E-mail");
                     final EditText editPassword = new EditText(getContext());
                     editPassword.setHint("Password");
+                    editPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     layout.addView(editEmail);
                     layout.addView(editPassword);
                     final AlertDialog dialog = new AlertDialog.Builder(getContext())
@@ -548,6 +551,7 @@ public class MainActivity extends AppCompatActivity {
                     editName.setHint("new Name");
                     final EditText editPassword = new EditText(getContext());
                     editPassword.setHint("Password");
+                    editPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     layout.addView(editName);
                     layout.addView(editPassword);
                     final AlertDialog dialog = new AlertDialog.Builder(getContext())
@@ -650,7 +654,6 @@ public class MainActivity extends AppCompatActivity {
                                                     }
                                                 }
                                             });
-                                            ;
                                         }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

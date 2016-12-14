@@ -130,11 +130,14 @@ public class MediaListActivity extends AppCompatActivity {
 
             //TODO:set media detail textviews
             MediaModel mediaModel = mediaModelList.get(position);
-            holder.tvMediaName.setText(mediaModel.getLocalFile().getName());
+            holder.tvMediaName.setText(mediaModel.getLocalFile().getName().split("(\\.)")[0]);
             String fileSize = "Size: " + readableSize(mediaModel.getMetaData().getSizeBytes());
             holder.tvFileSize.setText(fileSize);
             String date = "Date: " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(mediaModel.getMetaData().getUpdatedTimeMillis()));
             holder.tvDate.setText(date);
+            String pathArray[] = mediaModel.getPath().split("(\\.)");
+            String fileType = pathArray[pathArray.length-1];
+            holder.tvThumbType.setText(fileType);
 
             return convertView;
         }

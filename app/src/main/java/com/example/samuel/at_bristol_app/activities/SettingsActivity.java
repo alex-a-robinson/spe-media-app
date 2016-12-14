@@ -38,7 +38,10 @@ import java.util.List;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    Integer tab;
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -94,6 +97,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     };
 
 
+
     // Helper method to determine if the device has an extra-large screen.
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
@@ -125,7 +129,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
-        tab = (Integer) getIntent().getExtras().get("Tab");
     }
 
     /**

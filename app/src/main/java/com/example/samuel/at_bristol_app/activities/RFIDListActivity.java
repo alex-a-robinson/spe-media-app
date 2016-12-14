@@ -64,7 +64,7 @@ public class RFIDListActivity extends AppCompatActivity {
         ProgressBar progressSpinner = (ProgressBar) findViewById(R.id.pbRFIDList);
         progressSpinner.setVisibility(View.GONE);
 
-        if (rfidModelList.size() == 1) {selectRfid(0);}
+        //TODO: if (rfidModelList.size() == 1) {selectRfid(0);}
 
         ListView lvRFIDList = (ListView) findViewById(R.id.lvRfid);
         lvRFIDList.setAdapter(new RFIDModelAdapter(this,R.layout.rfid_list_element,rfidModelList));
