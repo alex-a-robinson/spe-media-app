@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -66,7 +67,7 @@ public class MediaListActivity extends AppCompatActivity {
         lvRFIDList.setAdapter(new MediaModelAdapter(this,R.layout.media_list_element,mediaModelList));
         lvRFIDList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 final MediaModel selectedMediaModel = mediaModelList.get(position); // get model of tapped group
                 if (selectedMediaModel.isDownloaded()){
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(parent.getContext());
@@ -82,13 +83,14 @@ public class MediaListActivity extends AppCompatActivity {
                     }).setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            selectedMediaModel.deleteLocalFile();
+                            selectedMediaModel.deleteLocalFile(view);
                         }
                     });
                     AlertDialog dialog = dialogBuilder.create();
                     dialog.show();
                 } else {
-                    selectedMediaModel.download();
+
+                    selectedMediaModel.download(view);
                 }
 
             }
@@ -123,6 +125,7 @@ public class MediaListActivity extends AppCompatActivity {
                 holder.tvExhibit  = (TextView) convertView.findViewById(R.id.tvExhibit);
                 holder.tvFileSize  = (TextView) convertView.findViewById(R.id.tvFileSize);
                 holder.tvDate      = (TextView) convertView.findViewById(R.id.tvDate);
+                holder.ivIcon      = (ImageView) convertView.findViewById(R.id.ivMedia);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -138,7 +141,10 @@ public class MediaListActivity extends AppCompatActivity {
             String pathArray[] = mediaModel.getPath().split("(\\.)");
             String fileType = pathArray[pathArray.length-1];
             holder.tvThumbType.setText(fileType);
-
+            if (mediaModel.isDownloaded()){
+                holder.ivIcon.setImageResource(R.drawable.ic_check_black_24dp);
+            }
+            holder.ivIcon.setColorFilter(0xffef3e42, PorterDuff.Mode.SRC_IN);
             return convertView;
         }
 
@@ -151,11 +157,13 @@ public class MediaListActivity extends AppCompatActivity {
 
         private class ViewHolder{
             private ImageView ivThumbnail;
+            private ImageView ivIcon;
             private  TextView tvThumbType;
             private  TextView tvMediaName;
             private  TextView tvExhibit;
             private  TextView tvFileSize;
             private  TextView tvDate;
+
         }
     }
 }

@@ -1,99 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp">
-
-        <ImageView
-            android:id="@+id/ivThumbnail"
-            android:layout_height="90dp"
-            android:contentDescription="@string/thumbnail"
-            android:src="@drawable/placeholder"
-            android:layout_width="120dp" />
-
-        <RelativeLayout
-            android:id="@+id/relativelayout"
-            android:layout_gravity="bottom|right"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:id="@+id/tvThumbType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_margin="4dp"
-                android:gravity="bottom|right"
-                android:text="@string/corner_file_type"
-                android:textColor="@color/colorTextLight"
-                android:background="@drawable/rounded_corner" />
-
-        </RelativeLayout>
-
-    </FrameLayout>
-
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp">
+
+            <ImageView
+                android:id="@+id/ivThumbnail"
+                android:layout_width="120dp"
+                android:layout_height="90dp"
+                android:contentDescription="@string/thumbnail"
+                android:src="@drawable/placeholder" />
+
+            <RelativeLayout
+                android:id="@+id/relativelayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right">
+
+                <TextView
+                    android:id="@+id/tvThumbType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="4dp"
+                    android:background="@drawable/rounded_corner"
+                    android:gravity="bottom|right"
+                    android:text="@string/corner_file_type"
+                    android:textColor="@color/colorTextLight" />
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:text="@string/media_title"
-                android:ellipsize="end"
-                android:maxLines="1"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvMediaName"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textSize="24sp"
-                android:textColor="?android:attr/textColorPrimary"
-                android:layout_marginLeft="6dp"
-                android:layout_marginTop="6dp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <TextView
-                android:text="@string/default_exhibit_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvExhibit"
-                android:layout_marginStart="8dp" />
+                <TextView
+                    android:id="@+id/tvMediaName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="6dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/media_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="24sp" />
 
-            <TextView
-                android:text="@string/media_size"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvFileSize"
-                android:layout_marginStart="8dp" />
+                <TextView
+                    android:id="@+id/tvExhibit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/default_exhibit_name" />
 
-            <TextView
-                android:text="@string/groupDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvDate"
-                android:layout_marginStart="8dp" />
+                <TextView
+                    android:id="@+id/tvFileSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/media_size" />
 
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|right"
-            android:layout_marginRight="16dp">
+                <TextView
+                    android:id="@+id/tvDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/groupDate" />
 
-            <ImageView
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_file_download_black_24dp"
-                android:id="@+id/imageView" />
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp">
 
-        </RelativeLayout>
-    </FrameLayout>
+                <ImageView
+                    android:id="@+id/ivMedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_file_download_black_24dp" />
 
-</LinearLayout>
+            </RelativeLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <ProgressBar
+            android:id="@+id/pbMedia"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-7dp"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+</FrameLayout>
