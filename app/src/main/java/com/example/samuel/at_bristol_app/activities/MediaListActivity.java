@@ -68,6 +68,22 @@ public class MediaListActivity extends AppCompatActivity {
         lvRFIDList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                final MediaModel selectedMediaModel = mediaModelList.get(position);
+                if (selectedMediaModel.isDownloaded()) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(
+                            FileProvider.getUriForFile(getApplicationContext(),
+                                    getApplicationContext().getPackageName() + ".provider",
+                                    selectedMediaModel.getLocalFile()), selectedMediaModel.getMetaData().getContentType()).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(intent);
+                } else {
+                    selectedMediaModel.download(view);
+                }
+
+            }
+        });
+        lvRFIDList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 final MediaModel selectedMediaModel = mediaModelList.get(position); // get model of tapped group
                 if (selectedMediaModel.isDownloaded()){
                     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(parent.getContext());
@@ -89,10 +105,17 @@ public class MediaListActivity extends AppCompatActivity {
                     AlertDialog dialog = dialogBuilder.create();
                     dialog.show();
                 } else {
-
-                    selectedMediaModel.download(view);
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(parent.getContext());
+                    dialogBuilder.setMessage("File Not Downloaded").setPositiveButton("Download", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            selectedMediaModel.download(view);
+                        }
+                    });
+                    AlertDialog dialog = dialogBuilder.create();
+                    dialog.show();
                 }
-
+                return true;
             }
         });
     }
