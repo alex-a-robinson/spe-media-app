@@ -20,6 +20,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URI;
 import java.sql.Time;
 import java.util.Date;
 
@@ -28,18 +29,20 @@ import java.util.Date;
  * will be displayed when the user is inside a group
  */
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class MediaModel{
     private String path;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     private StorageMetadata metaData;
     private MediaListActivity context;
-    private File localFile;
+    private File localFile, thumbFile;
 
     public MediaModel(final String path, final MediaListActivity context) {
         this.path = path;
         this.context = context;
         this.localFile = new File(context.getFilesDir(),path);
+        this.thumbFile = new File(context.getFilesDir(),path + ".thumb");
         this.firebaseStorage = FirebaseStorage.getInstance();
         this.storageReference = firebaseStorage.getReferenceFromUrl("gs://spe-elabs.appspot.com/" + path);
         storageReference.getMetadata().addOnCompleteListener(new OnCompleteListener<StorageMetadata>() {
@@ -51,6 +54,25 @@ public class MediaModel{
                 context.mediaCallback();
             }
         });
+
+        if (!localFile.getParentFile().exists()){
+            try {
+                localFile.getParentFile().mkdirs();
+            } catch (SecurityException ex){
+                System.out.print(ex.getMessage());
+            }
+        }
+        StorageReference thumbRef = firebaseStorage.getReferenceFromUrl("gs://spe-elabs.appspot.com/" + path + ".thumb");
+        thumbRef.getFile(thumbFile).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                context.mediaCallback();
+            }
+        });
+    }
+
+    public File getThumbnailFile(){
+        return thumbFile;
     }
 
     public StorageMetadata getMetaData(){

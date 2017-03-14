@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class CustomWebViewClient extends WebViewClient {
+    private static class CustomWebViewClient extends WebViewClient {
         private ProgressBar progressBar;
         CustomWebViewClient(View view,ProgressBar progressBar){
             this.progressBar = new ProgressBar(view.getContext());
@@ -411,7 +411,34 @@ public class MainActivity extends AppCompatActivity {
                     holder = (VisitModelAdapter.ViewHolder) convertView.getTag();
                 }
 
-                //TODO: Handle Thumbnails
+                switch (visitModelList.get(position).getDate().getMonth()){
+                    case 0: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_01);
+                        break;
+                    case 1: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_02);
+                        break;
+                    case 2: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_03);
+                        break;
+                    case 3: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_04);
+                        break;
+                    case 4: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_05);
+                        break;
+                    case 5: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_06);
+                        break;
+                    case 6: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_07);
+                        break;
+                    case 7: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_08);
+                        break;
+                    case 8: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_09);
+                        break;
+                    case 9: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_10);
+                        break;
+                    case 10: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_11);
+                        break;
+                    case 11: holder.ivVisitThumb.setImageResource(R.mipmap.bkg_12);
+                        break;
+
+                }
+
 
                 String string = "Visit On " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(visitModelList.get(position).getDate());
                 holder.tvVisitDate.setText(string);
@@ -692,7 +719,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
             super(fm);

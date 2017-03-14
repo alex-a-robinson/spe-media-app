@@ -1,8 +1,12 @@
 package com.example.samuel.at_bristol_app.models;
 
+import android.media.Image;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.samuel.at_bristol_app.activities.RFIDListActivity;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,5 +36,6 @@ public class VisitModel{
     public Date getDate(){
         return date;
     }
+
 
 }

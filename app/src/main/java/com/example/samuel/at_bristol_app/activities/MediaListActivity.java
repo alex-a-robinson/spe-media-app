@@ -54,7 +54,7 @@ public class MediaListActivity extends AppCompatActivity {
 
     public void mediaCallback(){
         callbackCount++;
-        if (callbackCount == mediaModelList.size()){
+        if (callbackCount == mediaModelList.size()*2){
             showList();
         }
     }
@@ -120,7 +120,7 @@ public class MediaListActivity extends AppCompatActivity {
         });
     }
 
-    static class MediaModelAdapter extends ArrayAdapter<MediaModel> {
+    private static class MediaModelAdapter extends ArrayAdapter<MediaModel> {
 
         private List<MediaModel> mediaModelList;
         private int resource;
@@ -154,7 +154,6 @@ public class MediaListActivity extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            //TODO:set media detail textviews
             MediaModel mediaModel = mediaModelList.get(position);
             holder.tvMediaName.setText(mediaModel.getLocalFile().getName().split("(\\.)")[0]);
             String fileSize = "Size: " + readableSize(mediaModel.getMetaData().getSizeBytes());
@@ -168,6 +167,7 @@ public class MediaListActivity extends AppCompatActivity {
                 holder.ivIcon.setImageResource(R.drawable.ic_check_black_24dp);
             }
             holder.ivIcon.setColorFilter(0xffef3e42, PorterDuff.Mode.SRC_IN);
+            holder.ivThumbnail.setImageURI(Uri.fromFile(mediaModel.getThumbnailFile()));
             return convertView;
         }
 
